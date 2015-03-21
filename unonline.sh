@@ -24,7 +24,7 @@ display_help() {
 }
 
 display_version() {
-    echo "UnOnline v0.1.4 (built: Mar 21 2015)"
+    echo "UnOnline v0.1.5 (built: Mar 21 2015)"
     echo "Author: EternalPhane"
     echo ""
     exit 0
@@ -48,11 +48,27 @@ error_handler() {
             echo "Failed to connect!" >&2
             exit 4
         ;;
+        5)
+            echo "Failed to UnOnline $1!" >&2
+            declare -u opt
+            echo "Continue to UnOnline the rest? [Y/N] (Default: Y)"
+            read opt
+
+            if [[ $opt = "N" ]]; then
+                exit 5
+            fi
+        ;;
     esac
 }
 
 logoff() {
-    curl -d "${param}$1&type=2" "http://gw.buaa.edu.cn/change_user_balance.php"
+    result=`curl -d "${param}$1&type=1" "http://gw.buaa.edu.cn/change_user_balance.php"`
+
+    if [[ $result -gt 0 ]]; then
+        echo "Succeeded to UnOnline $1!"
+    else
+        error_handler 5
+    fi
 }
 
 traverse() {
