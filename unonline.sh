@@ -1,6 +1,6 @@
 #!/bin/sh
 local_ip="`ifconfig | grep -w inet | grep -v 127.0.0.1 | cut -f 2 -d \":\" | cut -f 1 -d \" \"`"
-param="action=unlogin_user_mac&error_type=&type=1&mac_ip="
+param="action=unonline_user_mac&mac_ip="
 flag_range=false
 flag_self=true
 ip_list=()
@@ -52,7 +52,7 @@ error_handler() {
 }
 
 logoff() {
-    curl -d $param+"$1" "gw.buaa.edu.cn/change_user_balance.php"
+    curl -d "${param}$1&type=2" "http://gw.buaa.edu.cn/change_user_balance.php"
 }
 
 traverse() {
@@ -152,7 +152,7 @@ do
     esac
 done
 
-for ip in ip_list
+for ip in ${ip_list[*]}
 do
     logoff $ip
 done
