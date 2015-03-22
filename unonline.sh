@@ -49,12 +49,13 @@ error_handler() {
             exit 4
         ;;
         5)
-            echo "Failed to UnOnline $1!" >&2
+            echo "Failed to UnOnline $2!" >&2
             declare -u opt
             echo "Continue to UnOnline the rest? [Y/N] (Default: Y)"
             read opt
 
             if [[ $opt = "N" ]]; then
+                echo "Operation canceled!"
                 exit 5
             fi
         ;;
@@ -62,12 +63,10 @@ error_handler() {
 }
 
 logoff() {
-    result=`curl -d "${param}$1&type=1" "http://gw.buaa.edu.cn/change_user_balance.php"`
+    result=`curl -d "${param}$1&type=1" -s "http://gw.buaa.edu.cn/change_user_balance.php"`
 
-    if [[ $result -gt 0 ]]; then
-        echo "Succeeded to UnOnline $1!"
-    else
-        error_handler 5
+    if [[ $result -le 0 ]]; then
+        error_handler 5 $1
     fi
 }
 
@@ -156,7 +155,7 @@ do
             fi
         ;;
         *)
-            check_ip=`curl -m 5 -o /dev/null -w %{http_code} -s ${!i}`
+            check_ip=`curl -m 3 -o /dev/null -w %{http_code} -s ${!i}`
 
             if [[ $? -eq 6 ]]; then
                 error_handler 3
